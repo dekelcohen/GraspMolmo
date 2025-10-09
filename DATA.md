@@ -126,3 +126,5 @@ New data can be generated if desired. Doing so requires setting up the full data
 The TaskGrasp-Image dataset is available to download [here](https://pub-3e61ad92c7024712b84e4bf8658147f7.r2.dev/taskgrasp_image.tar.gz).
 The structure is largely the same as the [TaskGrasp](https://github.com/adithyamurali/TaskGrasp) dataset. Where point cloud registration succeeded,
 there are additional files `scans/<object_id>/<scan_id>_registered_grasps.npy`, `scans/<object_id>/<scan_id>_segmented_pc.npy`, and `scans/<object_id>/<scan_id>_pc_to_img_trf.npy`, which respectively contain the array of 25 annotated grasps in the camera frame, the segmented single-view point cloud of the object in the camera frame, and the transform between the camera frame and the fused point cloud frame.
+
+For an example of how to visualize the TaskGrasp-Image data, please refer to [this example script](examples/visualize_tg_img.py).
