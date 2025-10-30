@@ -158,7 +158,7 @@ def main():
     parser.add_argument(
         '--normalized',
         type=float,
-        choices=[1.0, 1000.0],
+        choices=[1.0, 100.0, 1000.0],
         default=0.0,
         help='If set, interpret bbox as normalized coordinates. Choose range: 1.0 for 0..1, 1000.0 for 0..1000. Default is off (pixel coords).'
     )
