@@ -28,7 +28,8 @@ def grasp_inference(processor, model, image_path: str, task: str) -> str:
 
     output = model.generate_from_batch(
         inputs,
-        GenerationConfig(max_new_tokens=256, stop_strings="<|endoftext|>")
+        GenerationConfig(max_new_tokens=256, stop_strings="<|endoftext|>"),
+        tokenizer=processor.tokenizer 
     )
     # The generated tokens beyond the input length
     generated_tokens = output[0, inputs["input_ids"].size(1):]
