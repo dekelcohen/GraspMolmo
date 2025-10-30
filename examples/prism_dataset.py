@@ -54,5 +54,5 @@ def build_pointing_dataset(split: str, num_proc: int = 10) -> datasets.Dataset:
     return dataset
 
 if __name__ == "__main__":
-    build_pointing_dataset("train")
-    build_pointing_dataset("test")
+    #build_pointing_dataset("train")
+    ds = build_pointing_dataset("test")
