@@ -177,7 +177,7 @@ def main():
 
     # Scale bbox if needed
     try:
-        normalized_flag = args.normalized in (1.0, 1000.0)
+        normalized_flag = args.normalized in (1.0, 100.0, 1000.0)
         bbox_px = scale_bbox(bbox_vals, image.shape, normalized=normalized_flag, norm_range=args.normalized if normalized_flag else 1000.0)
     except Exception as e:
         raise Exception(f"Error scaling bbox: {e}")
