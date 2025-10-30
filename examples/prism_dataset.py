@@ -20,6 +20,7 @@ def map_sample(file_loc_map: dict[str, str], ex: dict):
         img = Image.fromarray(f[ex["view_id"]]["rgb"][:])
         grasp_pt_px = f[ex["view_id"]][ex["obs_id"]]["grasp_point_px"][:]
         grasp_pt_px = grasp_pt_px / np.array([img.width, img.height])
+        xyz = f[ex["view_id"]]['xyz'][:]
     task = ex["task"]
     prompt = f"Point to the grasp that would accomplish the following task: {task}"
     point_xml = point_to_xml(grasp_pt_px)
@@ -30,10 +31,16 @@ def map_sample(file_loc_map: dict[str, str], ex: dict):
         prompt=prompt,
         text=response,
         style="pointing",
-        h5_path=h5_path
+        h5_path=h5_path,
+        xyz=xyz # point cloud for stable grasp predictor --> to generate candidates 
     )
 
-def build_pointing_dataset(split: str, num_proc: int = 10) -> datasets.Dataset:
+def build_pointing_dataset(split: str, num_proc: int = 10, max_rows: int = None) -> datasets.Dataset:
+    """
+    split: str - test, train 
+    num_proc: int = 10 - parallel processing on 10 cores by default 
+    max_rows: int = None - limit the dataset to 5 rows for examples inference --> loading dataset (map) is instant
+    """
     hf_fs = hf_hub.HfFileSystem()
     chunks = hf_fs.ls(f"datasets/allenai/PRISM/PRISM-{split}", detail=False)
     urls = []
@@ -52,6 +59,8 @@ def build_pointing_dataset(split: str, num_proc: int = 10) -> datasets.Dataset:
             file_loc_map[file] = os.path.join(path, file)
 
     metadata_ds = datasets.load_dataset("allenai/PRISM", split=split)
+    if not max_rows is None:
+        metadata_ds = metadata_ds.select(range(max_rows))
     dataset = metadata_ds.map(lambda ex: map_sample(file_loc_map, ex), num_proc=num_proc)
     return dataset
 
