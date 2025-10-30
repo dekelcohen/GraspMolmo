@@ -42,6 +42,7 @@ def build_pointing_dataset(split: str, num_proc: int = 10) -> datasets.Dataset:
 
     dl_manager = datasets.DownloadManager(dataset_name="allenai/PRISM", record_checksums=False)
     paths = dl_manager.download_and_extract(urls)
+    print('prism dataset split was downloaded to these local paths', paths)
 
     file_loc_map = {}
     for path in paths:
