@@ -1,6 +1,7 @@
 from PIL import Image
 from transformers import AutoModelForCausalLM, AutoProcessor, GenerationConfig
 import torch
+import argparse
 
 def load_model(model_name="allenai/GraspMolmo"):
     """
@@ -39,9 +40,14 @@ def grasp_inference(processor, model, image_path: str, task: str) -> str:
     return generated_text
 
 def main():
+    parser = argparse.ArgumentParser(description="Run GraspMolmo inference")
+    parser.add_argument("--image", type=str, required=True, help="Path to the input image")
+    parser.add_argument("--task_prompt", type=str, required=True, help="Task prompt describing what to do with the object")
+    args = parser.parse_args()
+
     processor, model = load_model()
-    image_path = "images/yellow_duck_with_so_101_arm.png"
-    task = "Pick up the yellow duck."
+    image_path = args.image
+    task = args.task_prompt
     result = grasp_inference(processor, model, image_path, task)
     print("Grasp prediction:", result)
 
