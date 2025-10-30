@@ -29,7 +29,8 @@ def map_sample(file_loc_map: dict[str, str], ex: dict):
         image=img,
         prompt=prompt,
         text=response,
-        style="pointing"
+        style="pointing",
+        h5_path=h5_path
     )
 
 def build_pointing_dataset(split: str, num_proc: int = 10) -> datasets.Dataset:
