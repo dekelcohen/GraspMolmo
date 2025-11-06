@@ -16,11 +16,15 @@ def point_to_xml(grasp_pt: np.ndarray):
 
 def map_sample(file_loc_map: dict[str, str], ex: dict):
     h5_path = file_loc_map[ex["scene_path"]]
-    with h5py.File(h5_path, "r") as f:
+    with h5py.File(h5_path, "r") as f:        
+        #for k in f[ex["view_id"]].keys():
+        #    print('****',f[ex["view_id"]][k])        
         img = Image.fromarray(f[ex["view_id"]]["rgb"][:])
         grasp_pt_px = f[ex["view_id"]][ex["obs_id"]]["grasp_point_px"][:]
         grasp_pt_px = grasp_pt_px / np.array([img.width, img.height])
         xyz = f[ex["view_id"]]['xyz'][:]
+        cam_params = f[ex["view_id"]]['cam_params'][:]
+        seg = f[ex["view_id"]]['seg'][:]
     task = ex["task"]
     prompt = f"Point to the grasp that would accomplish the following task: {task}"
     point_xml = point_to_xml(grasp_pt_px)
@@ -32,7 +36,9 @@ def map_sample(file_loc_map: dict[str, str], ex: dict):
         text=response,
         style="pointing",
         h5_path=h5_path,
-        xyz=xyz # point cloud for stable grasp predictor --> to generate candidates 
+        xyz=xyz, # point cloud for stable grasp predictor --> to generate candidates 
+        cam_params=cam_params,
+        seg=seg,
     )
 
 def build_pointing_dataset(split: str, num_proc: int = 10, max_rows: int = None) -> datasets.Dataset:
@@ -60,10 +66,10 @@ def build_pointing_dataset(split: str, num_proc: int = 10, max_rows: int = None)
 
     metadata_ds = datasets.load_dataset("allenai/PRISM", split=split)
     if not max_rows is None:
-        metadata_ds = metadata_ds.select(range(max_rows))
+        metadata_ds = metadata_ds.select(range(max_rows))    
     dataset = metadata_ds.map(lambda ex: map_sample(file_loc_map, ex), num_proc=num_proc)
     return dataset
 
 if __name__ == "__main__":
     #build_pointing_dataset("train")
-    ds = build_pointing_dataset("test")
+    ds = build_pointing_dataset("test", max_rows=10)
