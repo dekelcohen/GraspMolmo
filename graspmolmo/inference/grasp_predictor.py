@@ -63,6 +63,12 @@ class GraspMolmo:
         )
         inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
 
+        # The processor does not add a batch dimension, so we add it here.
+        if inputs["input_ids"].ndim == 1:
+            for k in inputs:
+                if isinstance(inputs[k], Tensor):
+                    inputs[k] = inputs[k].unsqueeze(0)
+
         output = self.model.generate_from_batch(inputs, self.gen_cfg, tokenizer=self.processor.tokenizer)
         generated_tokens = output[0, inputs["input_ids"].size(1):]
         generated_text = self.processor.tokenizer.decode(generated_tokens, skip_special_tokens=True)
