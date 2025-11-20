@@ -21,7 +21,7 @@ def main():
     
     # Load data from m2t2_predictor.py
     try:
-        rgb_image = Image.open(os.path.join(input_dir, "rgb_image.png"))
+        rgb_image = Image.open(os.path.join(input_dir, "rgb.png"))
         point_cloud = np.load(os.path.join(input_dir, "point_cloud.npy"))
         grasps = np.load(os.path.join(input_dir, "grasps.npy"))
         cam_K = np.load(os.path.join(input_dir, "camera_intrinsics.npy"))
