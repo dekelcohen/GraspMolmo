@@ -4,17 +4,18 @@ Demo script that loads M2T2 outputs and uses GraspMolmo to select a grasp.
 import numpy as np
 from PIL import Image
 import os
+import argparse
 
 from graspmolmo.inference.grasp_predictor import GraspMolmo
-from m2t2.meshcat_utils import (
-    create_visualizer,
-    make_frame,
-    visualize_grasp,
-    visualize_pointcloud
-)
+from graspmolmo.inference.utils import draw_grasp
 
 def main():
-    input_dir = "M2T2_grasp_outputs"
+    parser = argparse.ArgumentParser(description="Select a grasp using GraspMolmo from M2T2 outputs.")
+    parser.add_argument('--input_dir', type=str, default="../M2T2/examples/M2T2_grasp_outputs",
+                        help='Directory containing the M2T2 grasp outputs.')
+    args = parser.parse_args()
+
+    input_dir = args.input_dir
     
     # Load data from m2t2_predictor.py
     try:
@@ -40,23 +41,17 @@ def main():
         selected_grasp = grasps[selected_grasp_idx]
         
         # Visualization
-        print("Visualizing the scene and the selected grasp...")
-        vis = create_visualizer()
+        print("Visualizing the selected grasp on the 2D image...")
         
-        # Convert PIL image to numpy array for visualization
-        rgb_np = np.array(rgb_image)
+        # Draw the selected grasp on the image
+        # The grasp is in camera frame, which is what draw_grasp expects
+        draw_grasp(rgb_image, cam_K, selected_grasp, color="blue")
         
-        # The point cloud from M2T2 is already in the camera frame.
-        # For visualization, we transform it to the world frame.
-        xyz_world = point_cloud @ cam_pose[:3, :3].T + cam_pose[:3, 3]
+        # Save the image with the grasp visualization
+        output_image_path = os.path.join(input_dir, "rgb_image_with_grasp.png")
+        rgb_image.save(output_image_path)
         
-        make_frame(vis, 'camera', T=cam_pose)
-        visualize_pointcloud(vis, 'scene', xyz_world, rgb_np, size=0.005)
-
-        # The grasps are in the camera frame. For visualization, transform to world frame.
-        selected_grasp_world = cam_pose @ selected_grasp
-        visualize_grasp(vis, "selected_grasp", selected_grasp_world, [0, 255, 0], linewidth=0.5)
-        print("\nVisualization is ready. Check your meshcat viewer.")
+        print(f"\nSaved visualization to {os.path.abspath(output_image_path)}")
         print(f"Predicted grasp:\n{selected_grasp}")
 
     else:
