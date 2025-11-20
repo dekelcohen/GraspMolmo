@@ -11,8 +11,10 @@ from graspmolmo.inference.utils import draw_grasp
 
 def main():
     parser = argparse.ArgumentParser(description="Select a grasp using GraspMolmo from M2T2 outputs.")
-    parser.add_argument('--input_dir', type=str, default="../M2T2/M2T2_grasp_outputs",
+    parser.add_argument('--input_dir', type=str, default="../M2T2/examples/M2T2_grasp_outputs",
                         help='Directory containing the M2T2 grasp outputs.')
+    parser.add_argument('--task_prompt', type=str,
+                        help='The task prompt for GraspMolmo.')
     args = parser.parse_args()
 
     input_dir = args.input_dir
@@ -30,11 +32,10 @@ def main():
         return
 
     # GraspMolmo prediction
-    task = "Carry the guitar horizontally from the table to another location."
     gm = GraspMolmo()
 
     print("Running GraspMolmo to select the best grasp...")
-    selected_grasp_idx = gm.pred_grasp(rgb_image, point_cloud, task, grasps, cam_K, verbosity=1)
+    selected_grasp_idx = gm.pred_grasp(rgb_image, point_cloud, arg.task_prompt, grasps, cam_K, verbosity=1)
 
     if selected_grasp_idx is not None:
         print(f"GraspMolmo selected grasp index: {selected_grasp_idx}")
