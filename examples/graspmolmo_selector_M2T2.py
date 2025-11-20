@@ -11,7 +11,7 @@ from graspmolmo.inference.utils import draw_grasp
 
 def main():
     parser = argparse.ArgumentParser(description="Select a grasp using GraspMolmo from M2T2 outputs.")
-    parser.add_argument('--input_dir', type=str, default="../M2T2/examples/M2T2_grasp_outputs",
+    parser.add_argument('--input_dir', type=str, default="../M2T2/M2T2_grasp_outputs",
                         help='Directory containing the M2T2 grasp outputs.')
     args = parser.parse_args()
 
