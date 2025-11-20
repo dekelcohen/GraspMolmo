@@ -28,8 +28,9 @@ def main():
         rgb_image = Image.open(os.path.join(input_dir, "rgb.png"))
         point_cloud = np.load(os.path.join(input_dir, "point_cloud.npy"))
         grasps = np.load(os.path.join(input_dir, "grasps.npy"))
+        print(f'len(grasps) = {grasps.shape[0]}')
         cam_K = np.load(os.path.join(input_dir, "camera_intrinsics.npy"))
-        cam_pose = np.load(os.path.join(input_dir, "camera_pose.npy"))
+        cam_pose = np.load(os.path.join(input_dir, "camera_pose.npy"))        
     except FileNotFoundError as e:
         print(f"Error loading data: {e}")
         print(f"Please run m2t2_predictor.py first to generate the necessary files in the '{input_dir}' directory.")
@@ -50,7 +51,9 @@ def main():
         
         # If verbosity is 3 or higher, draw all candidate grasps in red
         if verbosity >= 3:
-            draw_grasp_points(rgb_image, cam_K, point_cloud, grasps, r=3, color="red")
+            for grasp in grasps:
+                draw_grasp(rgb_image, cam_K, grasp, color="red")
+            #draw_grasp_points(rgb_image, cam_K, point_cloud, grasps, r=3, color="red")
 
         # Draw the selected grasp on the image in blue
         draw_grasp(rgb_image, cam_K, selected_grasp, color="blue")
