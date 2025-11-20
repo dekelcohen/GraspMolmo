@@ -1,3 +1,5 @@
+#### !!!! This file is an abstract skeleton. See graspmolmo_selector_M2T2.py
+
 from prism_dataset import build_pointing_dataset
 from graspmolmo.inference.grasp_predictor import GraspMolmo
 

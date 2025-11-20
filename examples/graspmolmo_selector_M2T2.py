@@ -35,7 +35,7 @@ def main():
     gm = GraspMolmo()
 
     print("Running GraspMolmo to select the best grasp...")
-    selected_grasp_idx = gm.pred_grasp(rgb_image, point_cloud, arg.task_prompt, grasps, cam_K, verbosity=1)
+    selected_grasp_idx = gm.pred_grasp(rgb_image, point_cloud, args.task_prompt, grasps, cam_K, verbosity=1)
 
     if selected_grasp_idx is not None:
         print(f"GraspMolmo selected grasp index: {selected_grasp_idx}")
