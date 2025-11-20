@@ -2,22 +2,26 @@
 Demo script that loads M2T2 outputs and uses GraspMolmo to select a grasp.
 '''
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 import os
 import argparse
 
 from graspmolmo.inference.grasp_predictor import GraspMolmo
-from graspmolmo.inference.utils import draw_grasp
+from graspmolmo.inference.utils import draw_grasp, draw_grasp_points
 
 def main():
     parser = argparse.ArgumentParser(description="Select a grasp using GraspMolmo from M2T2 outputs.")
     parser.add_argument('--input_dir', type=str, default="../M2T2/examples/M2T2_grasp_outputs",
                         help='Directory containing the M2T2 grasp outputs.')
-    parser.add_argument('--task_prompt', type=str,
+    parser.add_argument('--task_prompt', type=str, default="Carry the guitar horizontally from the table to another location.",
                         help='The task prompt for GraspMolmo.')
+    parser.add_argument('--verbosity', type=int, default=3,
+                        help='Verbosity level for GraspMolmo output. 1 shows only the final grasp, 3 shows Molmo point and all candidate grasps.')
     args = parser.parse_args()
 
     input_dir = args.input_dir
+    task = args.task_prompt
+    verbosity = args.verbosity
     
     # Load data from m2t2_predictor.py
     try:
@@ -35,7 +39,7 @@ def main():
     gm = GraspMolmo()
 
     print("Running GraspMolmo to select the best grasp...")
-    selected_grasp_idx = gm.pred_grasp(rgb_image, point_cloud, args.task_prompt, grasps, cam_K, verbosity=1)
+    selected_grasp_idx = gm.pred_grasp(rgb_image, point_cloud, task, grasps, cam_K, verbosity=verbosity)
 
     if selected_grasp_idx is not None:
         print(f"GraspMolmo selected grasp index: {selected_grasp_idx}")
@@ -44,8 +48,11 @@ def main():
         # Visualization
         print("Visualizing the selected grasp on the 2D image...")
         
-        # Draw the selected grasp on the image
-        # The grasp is in camera frame, which is what draw_grasp expects
+        # If verbosity is 3 or higher, draw all candidate grasps in red
+        if verbosity >= 3:
+            draw_grasp_points(rgb_image, cam_K, point_cloud, grasps, r=3, color="red")
+
+        # Draw the selected grasp on the image in blue
         draw_grasp(rgb_image, cam_K, selected_grasp, color="blue")
         
         # Save the image with the grasp visualization
